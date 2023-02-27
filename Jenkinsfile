@@ -21,7 +21,7 @@ podTemplate(containers: [
                }
           }
           stage('Code coverage main') {
-             when {branch 'main' }              
+             when { branch 'main' }              
               steps {
                   echo 'Main branch'
               }
