@@ -12,19 +12,15 @@ podTemplate(containers: [
           stage('Build a gradle project') {
             echo "I am the ${env.BRANCH_NAME} branch"
           }
-          stage('Code coverage not main') {
-              when {
-                    not { branch 'main' }
-               }              
-               steps {
-                    echo 'Not main branch'
-               }
-          }
-          stage('Code coverage main') {
-             when { branch 'main' }              
-              steps {
-                  echo 'Main branch'
-              }
+          stage('Code coverage') {
+	    sh 'printenv'
+            echo "My CC branch is: ${env.CHANGE_BRANCH}"
+            echo "I am the ${env.BRANCH_NAME} branch"
+            if (env.BRANCH_NAME == "feature") {
+              echo "I am in the if"
+              echo "I am the ${env.BRANCH_NAME} branch"
+            }
+            echo "Did it work?"
           }
         }
       }   
