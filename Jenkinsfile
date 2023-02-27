@@ -11,7 +11,6 @@ podTemplate(
     ],
     podRetention: onFailure()
 ) {
-
     node(POD_LABEL) {
         stage('Run pipeline against a gradle project') {
             // "container" Selects a container of the agent pod so that all shell steps are executed in that container.
@@ -26,48 +25,56 @@ podTemplate(
                     ./gradlew test
                     '''
                 }
-            
-                stage("Code coverage") {
-                    try {
-                        sh '''
-        	            pwd
-               		    cd Chapter08/sample1
-                	    ./gradlew jacocoTestCoverageVerification
-                        ./gradlew jacocoTestReport
-                        '''
-                    } catch (Exception E) {
-                        echo 'Failure detected'
-                    }
 
-                    // from the HTML publisher plugin
-                    // https://www.jenkins.io/doc/pipeline/steps/htmlpublisher/
-                    publishHTML (target: [
-                        reportDir: 'Chapter08/sample1/build/reports/tests/test',
-                        reportFiles: 'index.html',
-                        reportName: "JaCoCo Report"
-                    ])                       
+                stage('Code coverage') {
+                    if (env.BRANCH_NAME == 'main') {
+                        echo "I am the ${env.BRANCH_NAME} branch"
+
+                        try {
+                            sh '''
+                            pwd
+                               cd Chapter08/sample1
+                            ./gradlew jacocoTestCoverageVerification
+                            ./gradlew jacocoTestReport
+                            '''
+                        } catch (Exception E) {
+                            echo 'Failure detected'
+                        }
+
+                        // from the HTML publisher plugin
+                        // https://www.jenkins.io/doc/pipeline/steps/htmlpublisher/
+                        publishHTML(target: [
+                            reportDir: 'Chapter08/sample1/build/reports/tests/test',
+                            reportFiles: 'index.html',
+                            reportName: 'JaCoCo Report'
+                        ])
+                    }
                 }
 
-                stage("Checkstyle Test") {
-                    try {
-                         sh '''
-        	            pwd
-               		    cd Chapter08/sample1
-                	    ./gradlew checkstyleMain
+                stage('Checkstyle Test') {
+                    if (env.BRANCH_NAME != 'main') {
+                        echo "I am the ${env.BRANCH_NAME} branch"
+
+                        try {
+                            sh '''
+                        pwd
+                           cd Chapter08/sample1
+                        ./gradlew checkstyleMain
                         '''
                     } catch (Exception E) {
-                        echo 'Failure detected'
-                    }
-                    
-                    // from the HTML publisher plugin
-                    // https://www.jenkins.io/doc/pipeline/steps/htmlpublisher/
-                    publishHTML (target: [
+                            echo 'Failure detected'
+                        }
+
+                        // from the HTML publisher plugin
+                        // https://www.jenkins.io/doc/pipeline/steps/htmlpublisher/
+                        publishHTML(target: [
                         reportDir: 'Chapter08/sample1/build/reports/checkstyle',
                         reportFiles: 'main.html',
-                        reportName: "Jacoco Checkstyle"
-                    ])                       
+                        reportName: 'Jacoco Checkstyle'
+                    ])
+                    }
                 }
-           }
+            }
         }
     }
 }
