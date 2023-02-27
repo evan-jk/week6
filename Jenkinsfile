@@ -52,7 +52,7 @@ podTemplate(
                 }
 
                 stage('Checkstyle Test') {
-                    if (env.BRANCH_NAME == 'main') {
+                    if (env.BRANCH_NAME != 'main') {
                         echo "I am the ${env.BRANCH_NAME} branch"
 
                         try {
