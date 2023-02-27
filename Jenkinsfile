@@ -16,8 +16,10 @@ podTemplate(containers: [
 	    sh 'printenv'
             echo "My CC branch is: ${env.CHANGE_BRANCH}"
             if (env.BRANCH_NAME == "feature") {
+              echo "I am in the if statement"
               echo "I am the ${env.BRANCH_NAME} branch"
             }
+            echo "Did it work?"
           }
         }
       }   
