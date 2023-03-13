@@ -62,18 +62,11 @@ podTemplate(yaml: '''
               echo 'Failure detected'
             }
 
-            // from the HTML publisher plugin
-            // https://www.jenkins.io/doc/pipeline/steps/htmlpublisher/
-            publishHTML(target: [
-              reportDir: 'Chapter08/sample1/build/reports/tests/test',
-              reportFiles: 'index.html',
-              reportName: 'JaCoCo Report'
-            ])
           }
         }
 
         stage('Checkstyle Test') {
-          if (env.BRANCH_NAME != 'main') {
+          if (env.BRANCH_NAME == 'feature' || enc.BRANCH_NAME == 'main') {
             echo "I am the ${env.BRANCH_NAME} branch"
             try {
               sh '''
@@ -84,21 +77,16 @@ podTemplate(yaml: '''
             } catch (Exception E) {
               echo 'Failure detected'
             }
-
-            // from the HTML publisher plugin
-            // https://www.jenkins.io/doc/pipeline/steps/htmlpublisher/
-            publishHTML(target: [
-              reportDir: 'Chapter08/sample1/build/reports/checkstyle',
-              reportFiles: 'main.html',
-              reportName: 'Jacoco Checkstyle'
-            ])
+          } else {
+            echo 'this is the playground branch - no testing'
           }
         }
       }
     }
 
     stage('Build Java Image') {
-      container('kaniko') {
+      if ( "${currentBuild.currentResult}" == "SUCCESS" && env.BRANCH_NAME != 'playground' &&) {
+        container('kaniko') {
         stage('Kaniko stage') {
               stage('Build a gradle project') {
               sh '''
@@ -111,6 +99,8 @@ podTemplate(yaml: '''
               }
         }
       }
+      }
+      
     }
   }
 }
