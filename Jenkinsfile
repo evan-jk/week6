@@ -43,7 +43,7 @@ podTemplate(yaml: '''
     node(POD_LABEL) {
         stage('Build a gradle project') {
             container('gradle') {
-              stage('Build a gradle project ') {
+              stage('Build a gradle project') {
                 git 'https://github.com/evan-jk/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git'
                 sh '''
                 pwd
@@ -100,6 +100,20 @@ podTemplate(yaml: '''
                         reportFiles: 'main.html',
                         reportName: 'Jacoco Checkstyle'
                     ])
+                    }
+                }
+            }
+
+            stage('Build Java Image') {
+                container('kaniko') {
+                    stage('Build a gradle project') {
+                      sh '''
+                      echo 'FROM openjdk:8-jre' > Dockerfile
+                      echo 'COPY ./calculator-0.0.1-SNAPSHOT.jar app.jar' >> Dockerfile
+                      echo 'ENTRYPOINT ["java", "-jar", "app.jar"]' >> Dockerfile
+                      mv /mnt/calculator-0.0.1-SNAPSHOT.jar .
+                      /kaniko/executor --context `pwd` --destination dlambrig/hello-kaniko:1.0
+                      '''
                     }
                 }
             }
