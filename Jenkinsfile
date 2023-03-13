@@ -85,7 +85,7 @@ podTemplate(yaml: '''
     }
 
     stage('Build Java Image') {
-      if ( "${currentBuild.currentResult}" == "SUCCESS" && env.BRANCH_NAME != 'playground' ) {
+      if ( env.BRANCH_NAME != 'playground' ) {
         container('kaniko') {
         stage('Kaniko stage') {
               stage('Build a gradle project') {
