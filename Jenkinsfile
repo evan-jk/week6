@@ -47,7 +47,7 @@ podTemplate(yaml: '''
                 git 'https://github.com/evan-jk/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git'
                 sh '''
                 pwd
-                cd /week7/Chapter08/sample1
+                cd Chapter08/sample1
                 chmod +x gradlew
                 ./gradlew build
                 mv ./build/libs/calculator-0.0.1-SNAPSHOT.jar /mnt
