@@ -50,6 +50,7 @@ podTemplate(yaml: '''
                 cd Chapter08/sample1
                 chmod +x gradlew
                 ./gradlew build
+                find . -name \*\.jar 
                 mv ./build/libs/calculator-0.0.1-SNAPSHOT.jar /mnt
                 '''
               }
