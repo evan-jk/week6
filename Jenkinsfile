@@ -68,6 +68,7 @@ podTemplate(yaml: '''
         stage('Checkstyle Test') {
           if (env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'main') {
             echo "I am the ${env.BRANCH_NAME} branch"
+            
             try {
               sh '''
               cd Chapter08/sample1
