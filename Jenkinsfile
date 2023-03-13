@@ -78,8 +78,7 @@ podTemplate(yaml: '''
             } catch (Exception E) {
               echo 'Failure detected'
             }
-          } else {
-            echo 'this is the playground branch - no testing'
+          } 
           }
         }
       }
