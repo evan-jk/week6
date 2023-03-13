@@ -66,7 +66,7 @@ podTemplate(yaml: '''
         }
 
         stage('Checkstyle Test') {
-          if (env.BRANCH_NAME == 'feature' || enc.BRANCH_NAME == 'main') {
+          if (env.BRANCH_NAME == 'feature' || env.BRANCH_NAME == 'main') {
             echo "I am the ${env.BRANCH_NAME} branch"
             try {
               sh '''
@@ -77,13 +77,15 @@ podTemplate(yaml: '''
             } catch (Exception E) {
               echo 'Failure detected'
             }
-          } 
+          } else {
+            echo 'this is the playground branch - no testing'
+          }
         }
       }
     }
 
     stage('Build Java Image') {
-      if ( env.BRANCH_NAME != 'playground' ) {
+      if ( "${currentBuild.currentResult}" == "SUCCESS" && env.BRANCH_NAME != 'playground') {
         container('kaniko') {
         stage('Kaniko stage') {
               stage('Build a gradle project') {
