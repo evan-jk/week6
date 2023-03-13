@@ -41,19 +41,65 @@ podTemplate(yaml: '''
         git 'https://github.com/evan-jk/Continuous-Delivery-with-Docker-and-Jenkins-Second-Edition.git'
         stage('Build a gradle project') {
           sh '''
-          pwd
           cd Chapter08/sample1
           chmod +x gradlew
           ./gradlew build
           mv ./build/libs/calculator-0.0.1-SNAPSHOT.jar /mnt
           '''
+        }
+
+        stage('Code coverage') {
+          if (env.BRANCH_NAME == 'main') {
+            echo "I am the ${env.BRANCH_NAME} branch"
+            try {
+              sh '''
+              pwd
+              cd Chapter08/sample1
+              ./gradlew jacocoTestCoverageVerification
+              ./gradlew jacocoTestReport
+              '''
+            } catch (Exception E) {
+              echo 'Failure detected'
+            }
+
+            // from the HTML publisher plugin
+            // https://www.jenkins.io/doc/pipeline/steps/htmlpublisher/
+            publishHTML(target: [
+              reportDir: 'Chapter08/sample1/build/reports/tests/test',
+              reportFiles: 'index.html',
+              reportName: 'JaCoCo Report'
+            ])
+          }
+        }
+
+        stage('Checkstyle Test') {
+          if (env.BRANCH_NAME != 'main') {
+            echo "I am the ${env.BRANCH_NAME} branch"
+            try {
+              sh '''
+              pwd
+              cd Chapter08/sample1
+              ./gradlew checkstyleMain
+              '''
+            } catch (Exception E) {
+              echo 'Failure detected'
+            }
+
+            // from the HTML publisher plugin
+            // https://www.jenkins.io/doc/pipeline/steps/htmlpublisher/
+            publishHTML(target: [
+              reportDir: 'Chapter08/sample1/build/reports/checkstyle',
+              reportFiles: 'main.html',
+              reportName: 'Jacoco Checkstyle'
+            ])
+          }
+        }
       }
     }
-  }
-      
+
     stage('Build Java Image') {
       container('kaniko') {
-        stage('Kaniko Container Feature Branch'){
+        stage('Kaniko stage') {
               stage('Build a gradle project') {
               sh '''
                 echo 'FROM openjdk:8-jre' > Dockerfile
@@ -62,9 +108,8 @@ podTemplate(yaml: '''
                 mv /mnt/calculator-0.0.1-SNAPSHOT.jar .
                 /kaniko/executor --context `pwd` --destination evanjk/hello-test.1
                 '''
-            }
+              }
         }
-        
       }
     }
   }
