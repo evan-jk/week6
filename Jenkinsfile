@@ -100,7 +100,8 @@ podTemplate(yaml: '''
                 sh '''
                 /kaniko/executor --context `pwd` --destination evanjk/calculator:1.0
                 '''
-              } if ( env.BRANCH_NAME == 'feature') {
+              } 
+              if ( env.BRANCH_NAME == 'feature') {
                 sh '''
                 /kaniko/executor --context `pwd` --destination evanjk/calculator:0.1
                 '''
