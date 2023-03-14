@@ -95,8 +95,16 @@ podTemplate(yaml: '''
                 echo 'COPY ./calculator-0.0.1-SNAPSHOT.jar app.jar' >> Dockerfile
                 echo 'ENTRYPOINT ["java", "-jar", "app.jar"]' >> Dockerfile
                 mv /mnt/calculator-0.0.1-SNAPSHOT.jar .
-                /kaniko/executor --context `pwd` --destination evanjk/hello-test.1
                 '''
+              if ( env.BRANCH_NAME == 'main') {
+                sh '''
+                /kaniko/executor --context `pwd` --destination evanjk/calculator:1.0
+                '''
+              } if ( env.BRANCH_NAME == 'feature') {
+                sh '''
+                /kaniko/executor --context `pwd` --destination evanjk/calculator:0.1
+                '''
+              }
               }
         }
       }
